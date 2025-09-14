@@ -21,7 +21,7 @@
 // Explanation: The following pairs satisfy conditions described in the statement: (1,2), (3,2), (2,1).
 // Example 2:
 
-// Input: n = 1, m = 1
+// Input: n = 1, m = 1v
 // Output: 0
 // Explanation: No pairs satisfy the conditions described in the statement.
  
