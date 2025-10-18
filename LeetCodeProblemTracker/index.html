@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetCode Problem Tracker - Startup SDE-1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+        
+        .progress-section {
+            padding: 30px 40px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .progress-bar-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .progress-bar {
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .controls {
+            padding: 30px 40px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .controls-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .control-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .control-group label {
+            font-weight: 600;
+            color: #333;
+            white-space: nowrap;
+        }
+        
+        select, input[type="text"] {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 150px;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: #ff4757;
+        }
+        
+        .btn-danger:hover {
+            background: #ee5a6f;
+        }
+        
+        .btn-success {
+            background: #2ed573;
+        }
+        
+        .btn-success:hover {
+            background: #26de81;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            padding: 30px 40px;
+            max-height: 700px;
+            overflow-y: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            /* position: sticky; */
+            top: 0;
+            z-index: 10;
+        }
+        
+        th {
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        th:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+        
+        /* tr:hover {
+            background: #f8f9fa;
+        } */
+        
+        tr.completed {
+            background: #e8f5e9;
+        }
+        
+        tr.completed:hover {
+            background: #c8e6c9;
+        }
+        
+        .priority-high {
+            background: #ff4757;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .priority-medium {
+            background: #ffa502;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .difficulty-easy { color: #2ed573; font-weight: 600; }
+        .difficulty-medium { color: #ffa502; font-weight: 600; }
+        .difficulty-hard { color: #ff4757; font-weight: 600; }
+        
+        .problem-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .problem-link:hover {
+            text-decoration: underline;
+        }
+        
+        .company-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .company-tag {
+            background: #e8eaf6;
+            color: #667eea;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .checkbox-cell {
+            text-align: center;
+        }
+        
+        .checkbox-cell input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+            font-size: 18px;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .control-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            select, input[type="text"] {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 LeetCode Problem Tracker</h1>
+            <p>Track your progress for Startup SDE-1 (Paytm, Jio, Airtel, Samsung, Cred)</p>
+        </div>
+        
+        <div class="progress-section">
+            <div class="progress-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalProblems">285</div>
+                    <div class="stat-label">Total Problems</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completedProblems">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="remainingProblems">285</div>
+                    <div class="stat-label">Remaining</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="progressPercent">0%</div>
+                    <div class="stat-label">Progress</div>
+                </div>
+            </div>
+            
+            <div class="progress-bar-container">
+                <div class="progress-bar-label">
+                    <span>Overall Progress</span>
+                    <span id="progressText">0 / 285</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="progressBarFill" style="width: 0%">0%</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="controls-row">
+                <div class="control-group">
+                    <label>Priority:</label>
+                    <select id="priorityFilter">
+                        <option value="all">All Priorities</option>
+                        <option value="high">High Priority</option>
+                        <option value="medium">Medium Priority</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label>Category:</label>
+                    <select id="categoryFilter">
+                        <option value="all">All Categories</option>
+                        <option value="arrays">Arrays & Two Pointers</option>
+                        <option value="sliding">Sliding Window</option>
+                        <option value="strings">Strings</option>
+                        <option value="binary">Binary Search</option>
+                        <option value="stacks">Stacks</option>
+                        <option value="linkedlist">Linked Lists</option>
+                        <option value="trees">Trees</option>
+                        <option value="graphs">Graphs</option>
+                        <option value="dp">Dynamic Programming</option>
+                        <option value="heaps">Heaps</option>
+                        <option value="backtracking">Backtracking</option>
+                        <option value="greedy">Greedy</option>
+                        <option value="design">Design</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label>Difficulty:</label>
+                    <select id="difficultyFilter">
+                        <option value="all">All Difficulties</option>
+                        <option value="Easy">Easy</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Hard">Hard</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label>Status:</label>
+                    <select id="statusFilter">
+                        <option value="all">All Problems</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="controls-row">
+                <div class="control-group">
+                    <label>Search:</label>
+                    <input type="text" id="searchBox" placeholder="Search problem name or pattern...">
+                </div>
+                
+                <div class="export-buttons">
+                    <button onclick="exportProgress()">📥 Export Progress</button>
+                    <button class="btn-success" onclick="markAllVisible()">✓ Mark All Visible</button>
+                    <button class="btn-danger" onclick="resetProgress()">🔄 Reset All</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table id="problemsTable" >
+                <thead>
+                    <tr  ">
+                        <th onclick="sortTable('done')">Done</th>
+                        <th onclick="sortTable('number')">#</th>
+                        <th onclick="sortTable('pattern')">Pattern</th>
+                        <th onclick="sortTable('problem')">Problem</th>
+                        <th onclick="sortTable('priority')">Priority</th>
+                        <th onclick="sortTable('difficulty')">Difficulty</th>
+                        <th>Common In</th>
+                        <th>Why Important</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+            <div id="noResults" class="no-results" style="display: none;">
+                No problems found matching your filters.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Complete problem database (ALL 285 problems)
+        const allProblems = [
+            {id: 1, pattern: "Two Pointers - Converging", problem: "1. Two Sum", priority: "high", difficulty: "Easy", companies: ["Paytm", "Cred", "Samsung"], category: "arrays", reason: "Most asked problem ever", number: 1},
+            {id: 2, pattern: "Two Pointers - Converging", problem: "11. Container With Most Water", priority: "high", difficulty: "Medium", companies: ["Jio", "Airtel"], category: "arrays", reason: "Core two-pointer logic", number: 11},
+            {id: 3, pattern: "Two Pointers - Converging", problem: "15. 3Sum", priority: "high", difficulty: "Medium", companies: ["Paytm", "Samsung"], category: "arrays", reason: "Common variation", number: 15},
+            {id: 4, pattern: "Two Pointers - In-place", problem: "26. Remove Duplicates from Sorted Array", priority: "high", difficulty: "Easy", companies: ["All"], category: "arrays", reason: "In-place basics", number: 26},
+            {id: 5, pattern: "Two Pointers - In-place", problem: "75. Sort Colors", priority: "high", difficulty: "Medium", companies: ["Paytm", "Samsung"], category: "arrays", reason: "Dutch National Flag", number: 75},
+            {id: 6, pattern: "Array - Merge Sorted", problem: "88. Merge Sorted Array", priority: "high", difficulty: "Easy", companies: ["All"], category: "arrays", reason: "In-place merge", number: 88},
+            {id: 7, pattern: "Bit - XOR", problem: "136. Single Number", priority: "high", difficulty: "Easy", companies: ["All"], category: "arrays", reason: "XOR trick", number: 136},
+            {id: 8, pattern: "Two Pointers - Fast & Slow", problem: "141. Linked List Cycle", priority: "high", difficulty: "Easy", companies: ["Paytm", "Cred", "Samsung"], category: "linkedlist", reason: "Floyd's algorithm", number: 141},
+            {id: 9, pattern: "Array - Majority Element", problem: "169. Majority Element", priority: "high", difficulty: "Easy", companies: ["All"], category: "arrays", reason: "Boyer-Moore", number: 169},
+            {id: 10, pattern: "Array - Contains Duplicate", problem: "217. Contains Duplicate", priority: "high", difficulty: "Easy", companies: ["All"], category: "arrays", reason: "HashSet basics", number: 217},
+            {id: 11, pattern: "Array - Product Except Self", problem: "238. Product of Array Except Self", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred", "Samsung"], category: "arrays", reason: "Top 10 array problem", number: 238},
+            {id: 12, pattern: "Bit - XOR", problem: "268. Missing Number", priority: "high", difficulty: "Easy", companies: ["Samsung", "Jio"], category: "arrays", reason: "XOR or sum", number: 268},
+            {id: 13, pattern: "Two Pointers - In-place", problem: "283. Move Zeroes", priority: "high", difficulty: "Easy", companies: ["All"], category: "arrays", reason: "Common warm-up", number: 283},
+            {id: 14, pattern: "Two Pointers - Fast & Slow", problem: "287. Find the Duplicate Number", priority: "high", difficulty: "Medium", companies: ["Samsung", "Paytm"], category: "arrays", reason: "Array cycle detection", number: 287},
+            {id: 15, pattern: "Two Pointers - Converging", problem: "349. Intersection of Two Arrays", priority: "high", difficulty: "Easy", companies: ["All"], category: "arrays", reason: "Set operations", number: 349},
+            {id: 16, pattern: "Two Pointers - Converging", problem: "977. Squares of a Sorted Array", priority: "high", difficulty: "Easy", companies: ["All"], category: "arrays", reason: "Two pointers sorted", number: 977},
+            {id: 17, pattern: "Two Pointers - Converging", problem: "167. Two Sum II", priority: "medium", difficulty: "Easy", companies: ["All"], category: "arrays", reason: "Sorted optimization", number: 167},
+            {id: 18, pattern: "Two Pointers - Converging", problem: "881. Boats to Save People", priority: "medium", difficulty: "Medium", companies: ["Jio"], category: "arrays", reason: "Greedy two pointers", number: 881},
+            {id: 19, pattern: "Two Pointers - Converging", problem: "16. 3Sum Closest", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "arrays", reason: "Optimization variant", number: 16},
+            {id: 20, pattern: "Two Pointers - Converging", problem: "18. 4Sum", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "arrays", reason: "Extension of 3Sum", number: 18},
+            {id: 21, pattern: "Two Pointers - In-place", problem: "27. Remove Element", priority: "medium", difficulty: "Easy", companies: ["All"], category: "arrays", reason: "Similar to remove dup", number: 27},
+            {id: 22, pattern: "Array - Next Permutation", problem: "31. Next Permutation", priority: "medium", difficulty: "Medium", companies: ["Samsung", "Paytm"], category: "arrays", reason: "In-place permutation", number: 31},
+            {id: 23, pattern: "Array - Cyclic Sort", problem: "41. First Missing Positive", priority: "medium", difficulty: "Hard", companies: ["Paytm", "Samsung"], category: "arrays", reason: "O(n) time O(1) space", number: 41},
+            {id: 24, pattern: "Array - Plus One", problem: "66. Plus One", priority: "medium", difficulty: "Easy", companies: ["Jio", "Airtel"], category: "arrays", reason: "Carry handling", number: 66},
+            {id: 25, pattern: "Two Pointers - In-place", problem: "80. Remove Duplicates from Sorted Array II", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "arrays", reason: "Allow duplicates", number: 80},
+            {id: 26, pattern: "Matrix - Rotation", problem: "189. Rotate Array", priority: "medium", difficulty: "Medium", companies: ["All"], category: "arrays", reason: "In-place rotation", number: 189},
+            {id: 27, pattern: "Bit - Counting Bits", problem: "191. Number of 1 Bits", priority: "medium", difficulty: "Easy", companies: ["Samsung"], category: "arrays", reason: "Bit manipulation", number: 191},
+            {id: 28, pattern: "Two Pointers - Fast & Slow", problem: "202. Happy Number", priority: "medium", difficulty: "Easy", companies: ["Jio"], category: "arrays", reason: "Cycle detection", number: 202},
+            {id: 29, pattern: "Bit - Power Check", problem: "231. Power of Two", priority: "medium", difficulty: "Easy", companies: ["Jio"], category: "arrays", reason: "Bit trick", number: 231},
+            {id: 30, pattern: "Two Pointers - Fast & Slow", problem: "392. Is Subsequence", priority: "medium", difficulty: "Easy", companies: ["All"], category: "arrays", reason: "Two pointer matching", number: 392},
+            {id: 31, pattern: "Array - Cyclic Sort", problem: "442. Find All Duplicates in an Array", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "arrays", reason: "In-place marking", number: 442},
+            {id: 32, pattern: "Array - Cyclic Sort", problem: "448. Find All Numbers Disappeared", priority: "medium", difficulty: "Easy", companies: ["Samsung"], category: "arrays", reason: "Cyclic sort", number: 448},
+            {id: 33, pattern: "Two Pointers - In-place", problem: "905. Sort Array By Parity", priority: "medium", difficulty: "Easy", companies: ["All"], category: "arrays", reason: "Partitioning", number: 905},
+            {id: 34, pattern: "Matrix - Rotation", problem: "48. Rotate Image", priority: "medium", difficulty: "Medium", companies: ["Samsung", "Paytm"], category: "arrays", reason: "Matrix rotation", number: 48},
+            {id: 35, pattern: "Matrix - Set Zeroes", problem: "73. Set Matrix Zeroes", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "arrays", reason: "In-place marking", number: 73},
+            
+            // SLIDING WINDOW
+            {id: 36, pattern: "Sliding Window - Variable", problem: "3. Longest Substring Without Repeating Characters", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred", "Samsung"], category: "sliding", reason: "Top sliding window", number: 3},
+            {id: 37, pattern: "Sliding Window - Variable", problem: "76. Minimum Window Substring", priority: "high", difficulty: "Hard", companies: ["Paytm", "Cred"], category: "sliding", reason: "Hard sliding window", number: 76},
+            {id: 38, pattern: "Sliding Window - Variable", problem: "209. Minimum Size Subarray Sum", priority: "high", difficulty: "Medium", companies: ["Jio", "Samsung"], category: "sliding", reason: "Core shrinking", number: 209},
+            {id: 39, pattern: "Sliding Window - Anagrams", problem: "438. Find All Anagrams in a String", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred"], category: "sliding", reason: "Frequency matching", number: 438},
+            {id: 40, pattern: "Sliding Window - Anagrams", problem: "567. Permutation in String", priority: "high", difficulty: "Medium", companies: ["Samsung"], category: "sliding", reason: "Similar to anagrams", number: 567},
+            {id: 41, pattern: "Sliding Window - Fixed", problem: "643. Maximum Average Subarray I", priority: "high", difficulty: "Easy", companies: ["All"], category: "sliding", reason: "Sliding intro", number: 643},
+            {id: 42, pattern: "Sliding Window - Variable", problem: "713. Subarray Product Less Than K", priority: "high", difficulty: "Medium", companies: ["Samsung", "Airtel"], category: "sliding", reason: "Product constraint", number: 713},
+            {id: 43, pattern: "Sliding Window - Variable", problem: "904. Fruit Into Baskets", priority: "high", difficulty: "Medium", companies: ["Jio"], category: "sliding", reason: "At most K distinct", number: 904},
+            {id: 44, pattern: "Sliding Window - Variable", problem: "1004. Max Consecutive Ones III", priority: "high", difficulty: "Medium", companies: ["Jio", "Samsung"], category: "sliding", reason: "K replacements", number: 1004},
+            {id: 45, pattern: "Sliding Window - Variable", problem: "1493. Longest Subarray of 1's After Deleting One", priority: "high", difficulty: "Medium", companies: ["Samsung"], category: "sliding", reason: "Delete one element", number: 1493},
+            {id: 46, pattern: "Sliding Window - Variable", problem: "219. Contains Duplicate II", priority: "high", difficulty: "Easy", companies: ["All"], category: "sliding", reason: "Window with constraint", number: 219},
+            {id: 47, pattern: "Sliding Window - Variable", problem: "424. Longest Repeating Character Replacement", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "sliding", reason: "Character replacement", number: 424},
+            {id: 48, pattern: "Sliding Window - Variable", problem: "1438. Longest Continuous Subarray", priority: "medium", difficulty: "Medium", companies: ["Jio"], category: "sliding", reason: "Absolute diff limit", number: 1438},
+            {id: 49, pattern: "Sliding Window - Variable", problem: "1658. Minimum Operations to Reduce X to Zero", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "sliding", reason: "Two pointers variant", number: 1658},
+            {id: 50, pattern: "Sliding Window - Variable", problem: "2461. Maximum Sum of Distinct Subarrays", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "sliding", reason: "Distinct with sum", number: 2461},
+            {id: 51, pattern: "Sliding Window - Max", problem: "239. Sliding Window Maximum", priority: "medium", difficulty: "Hard", companies: ["Paytm"], category: "sliding", reason: "Deque optimization", number: 239},
+            {id: 52, pattern: "Sliding Window - Fixed", problem: "346. Moving Average from Data Stream", priority: "medium", difficulty: "Easy", companies: ["All"], category: "sliding", reason: "Design with sliding", number: 346},
+            {id: 53, pattern: "Sliding Window - Variable", problem: "862. Shortest Subarray with Sum at Least K", priority: "medium", difficulty: "Hard", companies: ["Cred"], category: "sliding", reason: "Deque + prefix sum", number: 862},
+            {id: 54, pattern: "Sliding Window - Variable", problem: "1696. Jump Game VI", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "sliding", reason: "DP with sliding max", number: 1696},
+
+            // STRINGS
+            {id: 55, pattern: "String - Palindrome", problem: "5. Longest Palindromic Substring", priority: "high", difficulty: "Medium", companies: ["Paytm", "Samsung"], category: "strings", reason: "Expand from center", number: 5},
+            {id: 56, pattern: "String - Longest Common Prefix", problem: "14. Longest Common Prefix", priority: "high", difficulty: "Easy", companies: ["Jio", "Airtel"], category: "strings", reason: "String comparison", number: 14},
+            {id: 57, pattern: "Stack - Valid Parentheses", problem: "20. Valid Parentheses", priority: "high", difficulty: "Easy", companies: ["All"], category: "strings", reason: "Stack basics", number: 20},
+            {id: 58, pattern: "String Matching", problem: "28. Implement strStr()", priority: "high", difficulty: "Easy", companies: ["All"], category: "strings", reason: "String matching", number: 28},
+            {id: 59, pattern: "String - Anagram", problem: "49. Group Anagrams", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred", "Samsung"], category: "strings", reason: "HashMap + sorting", number: 49},
+            {id: 60, pattern: "String - Palindrome", problem: "125. Valid Palindrome", priority: "high", difficulty: "Easy", companies: ["All"], category: "strings", reason: "String basics", number: 125},
+            {id: 61, pattern: "String - Anagram", problem: "242. Valid Anagram", priority: "high", difficulty: "Easy", companies: ["All"], category: "strings", reason: "Frequency counting", number: 242},
+            {id: 62, pattern: "String - Reversal", problem: "344. Reverse String", priority: "high", difficulty: "Easy", companies: ["All"], category: "strings", reason: "Basic two pointers", number: 344},
+            {id: 63, pattern: "String - First Unique", problem: "387. First Unique Character in a String", priority: "high", difficulty: "Easy", companies: ["All"], category: "strings", reason: "Frequency array", number: 387},
+            {id: 64, pattern: "String - Palindrome", problem: "647. Palindromic Substrings", priority: "high", difficulty: "Medium", companies: ["Samsung"], category: "strings", reason: "Count palindromes", number: 647},
+            {id: 65, pattern: "String - Palindrome", problem: "680. Valid Palindrome II", priority: "high", difficulty: "Easy", companies: ["All"], category: "strings", reason: "Delete one character", number: 680},
+            {id: 66, pattern: "String - Backspace", problem: "844. Backspace String Compare", priority: "high", difficulty: "Easy", companies: ["All"], category: "strings", reason: "Two pointers from end", number: 844},
+            {id: 67, pattern: "String - atoi", problem: "8. String to Integer (atoi)", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "strings", reason: "Edge case handling", number: 8},
+            {id: 68, pattern: "String - Roman", problem: "13. Roman to Integer", priority: "medium", difficulty: "Easy", companies: ["Jio", "Airtel"], category: "strings", reason: "String parsing", number: 13},
+            {id: 69, pattern: "String - Multiply", problem: "43. Multiply Strings", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "strings", reason: "Manual multiplication", number: 43},
+            {id: 70, pattern: "String - Reversal", problem: "151. Reverse Words in a String", priority: "medium", difficulty: "Medium", companies: ["All"], category: "strings", reason: "String reversal", number: 151},
+            {id: 71, pattern: "String - Reversal", problem: "345. Reverse Vowels of a String", priority: "medium", difficulty: "Easy", companies: ["Jio"], category: "strings", reason: "Conditional reversal", number: 345},
+            {id: 72, pattern: "String - Longest Palindrome", problem: "409. Longest Palindrome", priority: "medium", difficulty: "Easy", companies: ["All"], category: "strings", reason: "Frequency counting", number: 409},
+            {id: 73, pattern: "String - Add Strings", problem: "415. Add Strings", priority: "medium", difficulty: "Easy", companies: ["All"], category: "strings", reason: "String addition", number: 415},
+            {id: 74, pattern: "String - Repeated Pattern", problem: "459. Repeated Substring Pattern", priority: "medium", difficulty: "Easy", companies: ["Samsung"], category: "strings", reason: "Pattern detection", number: 459},
+            {id: 75, pattern: "String - Reversal", problem: "541. Reverse String II", priority: "medium", difficulty: "Easy", companies: ["All"], category: "strings", reason: "Reverse every 2k", number: 541},
+            {id: 76, pattern: "String - Rotate", problem: "796. Rotate String", priority: "medium", difficulty: "Easy", companies: ["All"], category: "strings", reason: "String rotation check", number: 796},
+            {id: 77, pattern: "String - Find Common", problem: "1002. Find Common Characters", priority: "medium", difficulty: "Easy", companies: ["All"], category: "strings", reason: "Frequency intersection", number: 1002},
+            {id: 78, pattern: "String - Construction", problem: "1370. Increasing Decreasing String", priority: "medium", difficulty: "Easy", companies: ["All"], category: "strings", reason: "String construction", number: 1370},
+            {id: 79, pattern: "String - Parentheses", problem: "1614. Maximum Nesting Depth of Parentheses", priority: "medium", difficulty: "Easy", companies: ["All"], category: "strings", reason: "Parentheses counting", number: 1614},
+
+            // BINARY SEARCH
+            {id: 80, pattern: "Binary Search - Rotated", problem: "33. Search in Rotated Sorted Array", priority: "high", difficulty: "Medium", companies: ["Paytm", "Samsung"], category: "binary", reason: "Most asked BS", number: 33},
+            {id: 81, pattern: "Binary Search - First/Last", problem: "34. Find First and Last Position", priority: "high", difficulty: "Medium", companies: ["Paytm", "Samsung"], category: "binary", reason: "Range finding", number: 34},
+            {id: 82, pattern: "Binary Search - Basic", problem: "35. Search Insert Position", priority: "high", difficulty: "Easy", companies: ["All"], category: "binary", reason: "Finding insertion", number: 35},
+            {id: 83, pattern: "Binary Search - Sqrt", problem: "69. Sqrt(x)", priority: "high", difficulty: "Easy", companies: ["All"], category: "binary", reason: "BS on range", number: 69},
+            {id: 84, pattern: "Binary Search - Rotated", problem: "153. Find Minimum in Rotated Sorted Array", priority: "high", difficulty: "Medium", companies: ["Samsung", "Jio"], category: "binary", reason: "Finding pivot", number: 153},
+            {id: 85, pattern: "Binary Search - Basic", problem: "278. First Bad Version", priority: "high", difficulty: "Easy", companies: ["All"], category: "binary", reason: "BS template", number: 278},
+            {id: 86, pattern: "Binary Search - Basic", problem: "704. Binary Search", priority: "high", difficulty: "Easy", companies: ["All"], category: "binary", reason: "Template learning", number: 704},
+            {id: 87, pattern: "Binary Search - Answer", problem: "875. Koko Eating Bananas", priority: "high", difficulty: "Medium", companies: ["Jio"], category: "binary", reason: "BS on answer intro", number: 875},
+            {id: 88, pattern: "Binary Search - Basic", problem: "1539. Kth Missing Positive Number", priority: "high", difficulty: "Easy", companies: ["All"], category: "binary", reason: "Missing in range", number: 1539},
+            {id: 89, pattern: "Binary Search - First/Last", problem: "658. Find K Closest Elements", priority: "high", difficulty: "Medium", companies: ["Samsung"], category: "binary", reason: "BS + two pointers", number: 658},
+            {id: 90, pattern: "Binary Search - Basic", problem: "74. Search a 2D Matrix", priority: "medium", difficulty: "Medium", companies: ["Samsung", "Jio"], category: "binary", reason: "2D binary search", number: 74},
+            {id: 91, pattern: "Binary Search - Rotated", problem: "81. Search in Rotated Sorted Array II", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "binary", reason: "With duplicates", number: 81},
+            {id: 92, pattern: "Binary Search - Rotated", problem: "162. Find Peak Element", priority: "medium", difficulty: "Medium", companies: ["Airtel"], category: "binary", reason: "Local maxima", number: 162},
+            {id: 93, pattern: "Binary Search - Basic", problem: "374. Guess Number Higher or Lower", priority: "medium", difficulty: "Easy", companies: ["All"], category: "binary", reason: "Interactive BS", number: 374},
+            {id: 94, pattern: "Binary Search - Basic", problem: "540. Single Element in a Sorted Array", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "binary", reason: "Finding unique", number: 540},
+            {id: 95, pattern: "Binary Search - Answer", problem: "1011. Capacity To Ship Packages Within D Days", priority: "medium", difficulty: "Medium", companies: ["Jio"], category: "binary", reason: "BS on answer", number: 1011},
+            {id: 96, pattern: "Binary Search - Answer", problem: "1482. Minimum Number of Days to Make m Bouquets", priority: "medium", difficulty: "Medium", companies: ["Airtel"], category: "binary", reason: "BS on days", number: 1482},
+            {id: 97, pattern: "Binary Search - Median", problem: "4. Median of Two Sorted Arrays", priority: "medium", difficulty: "Hard", companies: ["Paytm"], category: "binary", reason: "Advanced BS", number: 4},
+
+            // STACKS
+            {id: 98, pattern: "Stack - Valid Parentheses", problem: "20. Valid Parentheses", priority: "high", difficulty: "Easy", companies: ["All"], category: "stacks", reason: "Stack basics", number: 20},
+            {id: 99, pattern: "Stack - Min Stack", problem: "155. Min Stack", priority: "high", difficulty: "Medium", companies: ["All"], category: "stacks", reason: "Design classic", number: 155},
+            {id: 100, pattern: "Stack - Simulation", problem: "394. Decode String", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred"], category: "stacks", reason: "Nested decoding", number: 394},
+            {id: 101, pattern: "Stack - Monotonic", problem: "496. Next Greater Element I", priority: "high", difficulty: "Easy", companies: ["Samsung", "Jio"], category: "stacks", reason: "Monotonic intro", number: 496},
+            {id: 102, pattern: "Stack - Monotonic", problem: "503. Next Greater Element II", priority: "high", difficulty: "Medium", companies: ["Samsung"], category: "stacks", reason: "Circular variant", number: 503},
+            {id: 103, pattern: "Stack - Monotonic", problem: "739. Daily Temperatures", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred", "Samsung"], category: "stacks", reason: "Very common", number: 739},
+            {id: 104, pattern: "Stack - RPN", problem: "150. Evaluate Reverse Polish Notation", priority: "high", difficulty: "Medium", companies: ["Cred"], category: "stacks", reason: "Stack evaluation", number: 150},
+            {id: 105, pattern: "Stack - Simulation", problem: "71. Simplify Path", priority: "high", difficulty: "Medium", companies: ["All"], category: "stacks", reason: "Path simplification", number: 71},
+            {id: 106, pattern: "Stack - Largest Rectangle", problem: "84. Largest Rectangle in Histogram", priority: "high", difficulty: "Hard", companies: ["Paytm"], category: "stacks", reason: "Monotonic advanced", number: 84},
+            {id: 107, pattern: "Stack - Largest Rectangle", problem: "85. Maximal Rectangle", priority: "high", difficulty: "Hard", companies: ["Samsung"], category: "stacks", reason: "2D histogram", number: 85},
+            {id: 108, pattern: "Stack - Valid Parentheses", problem: "32. Longest Valid Parentheses", priority: "medium", difficulty: "Hard", companies: ["Paytm"], category: "stacks", reason: "DP or stack", number: 32},
+            {id: 109, pattern: "Stack - Monotonic", problem: "402. Remove K Digits", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "stacks", reason: "Monotonic greedy", number: 402},
+            {id: 110, pattern: "Stack - Simulation", problem: "735. Asteroid Collision", priority: "medium", difficulty: "Medium", companies: ["Jio"], category: "stacks", reason: "Collision simulation", number: 735},
+            {id: 111, pattern: "Stack - Monotonic", problem: "901. Online Stock Span", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "stacks", reason: "Monotonic stack", number: 901},
+            {id: 112, pattern: "Stack - Valid Parentheses", problem: "921. Minimum Add to Make Parentheses Valid", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "stacks", reason: "Counting variant", number: 921},
+            {id: 113, pattern: "Stack - Valid Parentheses", problem: "1249. Minimum Remove to Make Valid Parentheses", priority: "medium", difficulty: "Medium", companies: ["Cred"], category: "stacks", reason: "String + stack", number: 1249},
+
+            // LINKED LISTS
+            {id: 114, pattern: "Linked List - Addition", problem: "2. Add Two Numbers", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred"], category: "linkedlist", reason: "Carry handling", number: 2},
+            {id: 115, pattern: "Linked List - Remove Nth", problem: "19. Remove Nth Node From End of List", priority: "high", difficulty: "Medium", companies: ["All"], category: "linkedlist", reason: "Fast-slow pointers", number: 19},
+            {id: 116, pattern: "Linked List - Merge", problem: "21. Merge Two Sorted Lists", priority: "high", difficulty: "Easy", companies: ["All"], category: "linkedlist", reason: "Basic merging", number: 21},
+            {id: 117, pattern: "Heap - K-way Merge", problem: "23. Merge k Sorted Lists", priority: "high", difficulty: "Hard", companies: ["Paytm", "Samsung"], category: "linkedlist", reason: "Heap merging", number: 23},
+            {id: 118, pattern: "Linked List - Cycle", problem: "141. Linked List Cycle", priority: "high", difficulty: "Easy", companies: ["All"], category: "linkedlist", reason: "Floyd's algorithm", number: 141},
+            {id: 119, pattern: "Linked List - Intersection", problem: "160. Intersection of Two Linked Lists", priority: "high", difficulty: "Easy", companies: ["Samsung"], category: "linkedlist", reason: "Two pointer technique", number: 160},
+            {id: 120, pattern: "Linked List - Reversal", problem: "206. Reverse Linked List", priority: "high", difficulty: "Easy", companies: ["All"], category: "linkedlist", reason: "Top LL problem", number: 206},
+            {id: 121, pattern: "Linked List - Reversal", problem: "234. Palindrome Linked List", priority: "high", difficulty: "Easy", companies: ["Samsung", "Cred"], category: "linkedlist", reason: "Multiple concepts", number: 234},
+            {id: 122, pattern: "Linked List - Middle", problem: "876. Middle of the Linked List", priority: "high", difficulty: "Easy", companies: ["All"], category: "linkedlist", reason: "Fast-slow basics", number: 876},
+            {id: 123, pattern: "Linked List - Reversal", problem: "83. Remove Duplicates from Sorted List", priority: "high", difficulty: "Easy", companies: ["All"], category: "linkedlist", reason: "Simple traversal", number: 83},
+            {id: 124, pattern: "Linked List - Remove", problem: "203. Remove Linked List Elements", priority: "high", difficulty: "Easy", companies: ["All"], category: "linkedlist", reason: "Value removal", number: 203},
+            {id: 125, pattern: "Linked List - Delete", problem: "237. Delete Node in a Linked List", priority: "high", difficulty: "Medium", companies: ["All"], category: "linkedlist", reason: "No head access", number: 237},
+            {id: 126, pattern: "Linked List - Reorder", problem: "24. Swap Nodes in Pairs", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "linkedlist", reason: "Pair manipulation", number: 24},
+            {id: 127, pattern: "Linked List - Reorder", problem: "61. Rotate List", priority: "medium", difficulty: "Medium", companies: ["Jio"], category: "linkedlist", reason: "Rotation logic", number: 61},
+            {id: 128, pattern: "Linked List - Reversal", problem: "82. Remove Duplicates from Sorted List II", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "linkedlist", reason: "Remove all duplicates", number: 82},
+            {id: 129, pattern: "Linked List - Reorder", problem: "86. Partition List", priority: "medium", difficulty: "Medium", companies: ["All"], category: "linkedlist", reason: "List partitioning", number: 86},
+            {id: 130, pattern: "Linked List - Reversal", problem: "92. Reverse Linked List II", priority: "medium", difficulty: "Medium", companies: ["Paytm", "Samsung"], category: "linkedlist", reason: "Partial reversal", number: 92},
+            {id: 131, pattern: "Linked List - Reorder", problem: "143. Reorder List", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "linkedlist", reason: "Multiple operations", number: 143},
+            {id: 132, pattern: "Linked List - Cycle", problem: "142. Linked List Cycle II", priority: "medium", difficulty: "Medium", companies: ["Paytm", "Samsung"], category: "linkedlist", reason: "Finding cycle start", number: 142},
+            {id: 133, pattern: "Linked List - Reorder", problem: "328. Odd Even Linked List", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "linkedlist", reason: "Odd-even grouping", number: 328},
+
+            // TREES - Part 1
+            {id: 134, pattern: "Tree DFS - Inorder", problem: "94. Binary Tree Inorder Traversal", priority: "high", difficulty: "Easy", companies: ["All"], category: "trees", reason: "Traversal basics", number: 94},
+            {id: 135, pattern: "Tree DFS - Inorder", problem: "98. Validate Binary Search Tree", priority: "high", difficulty: "Medium", companies: ["Paytm", "Samsung", "Cred"], category: "trees", reason: "BST property", number: 98},
+            {id: 136, pattern: "Tree DFS - Preorder", problem: "100. Same Tree", priority: "high", difficulty: "Easy", companies: ["All"], category: "trees", reason: "Tree comparison", number: 100},
+            {id: 137, pattern: "Tree DFS - Preorder", problem: "101. Symmetric Tree", priority: "high", difficulty: "Easy", companies: ["All"], category: "trees", reason: "Mirror check", number: 101},
+            {id: 138, pattern: "Tree BFS - Level Order", problem: "102. Binary Tree Level Order Traversal", priority: "high", difficulty: "Medium", companies: ["All"], category: "trees", reason: "BFS template", number: 102},
+            {id: 139, pattern: "Tree DFS - Postorder", problem: "104. Maximum Depth of Binary Tree", priority: "high", difficulty: "Easy", companies: ["All"], category: "trees", reason: "DFS basics", number: 104},
+            {id: 140, pattern: "Tree - Construct", problem: "108. Convert Sorted Array to BST", priority: "high", difficulty: "Easy", companies: ["All"], category: "trees", reason: "BST construction", number: 108},
+            {id: 141, pattern: "Tree DFS - Path Sum", problem: "112. Path Sum", priority: "high", difficulty: "Easy", companies: ["All"], category: "trees", reason: "DFS with target", number: 112},
+            {id: 142, pattern: "Tree DFS - Preorder", problem: "144. Binary Tree Preorder Traversal", priority: "high", difficulty: "Easy", companies: ["All"], category: "trees", reason: "Preorder basics", number: 144},
+            {id: 143, pattern: "Tree DFS - Postorder", problem: "145. Binary Tree Postorder Traversal", priority: "high", difficulty: "Easy", companies: ["All"], category: "trees", reason: "Postorder basics", number: 145},
+            {id: 144, pattern: "Tree BFS - Level Order", problem: "199. Binary Tree Right Side View", priority: "high", difficulty: "Medium", companies: ["Paytm", "Samsung"], category: "trees", reason: "Level traversal", number: 199},
+            {id: 145, pattern: "Tree DFS - Preorder", problem: "226. Invert Binary Tree", priority: "high", difficulty: "Easy", companies: ["All"], category: "trees", reason: "Tree manipulation", number: 226},
+            {id: 146, pattern: "Tree DFS - Inorder", problem: "230. Kth Smallest Element in a BST", priority: "high", difficulty: "Medium", companies: ["Samsung", "Jio"], category: "trees", reason: "Inorder + counting", number: 230},
+            {id: 147, pattern: "Tree - LCA", problem: "235. Lowest Common Ancestor of a BST", priority: "high", difficulty: "Medium", companies: ["Samsung"], category: "trees", reason: "BST LCA", number: 235},
+            {id: 148, pattern: "Tree - LCA", problem: "236. Lowest Common Ancestor of a Binary Tree", priority: "high", difficulty: "Medium", companies: ["Paytm", "Samsung"], category: "trees", reason: "Tree LCA", number: 236},
+            {id: 149, pattern: "Tree DFS - Postorder", problem: "543. Diameter of Binary Tree", priority: "high", difficulty: "Easy", companies: ["Paytm", "Cred"], category: "trees", reason: "Path through node", number: 543},
+            {id: 150, pattern: "Tree - Subtree", problem: "572. Subtree of Another Tree", priority: "high", difficulty: "Easy", companies: ["Samsung"], category: "trees", reason: "Tree comparison", number: 572},
+            {id: 151, pattern: "Tree - Merge", problem: "617. Merge Two Binary Trees", priority: "high", difficulty: "Easy", companies: ["All"], category: "trees", reason: "Tree merging", number: 617},
+            {id: 152, pattern: "Tree - Construct", problem: "105. Construct Binary Tree from Preorder and Inorder", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "trees", reason: "Tree reconstruction", number: 105},
+            {id: 153, pattern: "Tree - Construct", problem: "106. Construct Binary Tree from Inorder and Postorder", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "trees", reason: "Tree reconstruction", number: 106},
+            {id: 154, pattern: "Tree DFS - Postorder", problem: "110. Balanced Binary Tree", priority: "medium", difficulty: "Easy", companies: ["Samsung"], category: "trees", reason: "Height calculation", number: 110},
+            {id: 155, pattern: "Tree BFS - Min Depth", problem: "111. Minimum Depth of Binary Tree", priority: "medium", difficulty: "Easy", companies: ["All"], category: "trees", reason: "BFS for min depth", number: 111},
+            {id: 156, pattern: "Tree DFS - Path Sum", problem: "113. Path Sum II", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "trees", reason: "All paths", number: 113},
+            {id: 157, pattern: "Tree DFS - Preorder", problem: "114. Flatten Binary Tree to Linked List", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "trees", reason: "Tree to list", number: 114},
+            {id: 158, pattern: "Tree BFS - Level Order", problem: "116. Populating Next Right Pointers", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "trees", reason: "Level linking", number: 116},
+            {id: 159, pattern: "Tree DFS - Postorder", problem: "124. Binary Tree Maximum Path Sum", priority: "medium", difficulty: "Hard", companies: ["Paytm"], category: "trees", reason: "Complex path finding", number: 124},
+            {id: 160, pattern: "Tree DFS - Path Sum", problem: "129. Sum Root to Leaf Numbers", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "trees", reason: "Path sum calculation", number: 129},
+            {id: 161, pattern: "Tree - Iterator", problem: "173. Binary Search Tree Iterator", priority: "medium", difficulty: "Medium", companies: ["Cred"], category: "trees", reason: "BST iterator design", number: 173},
+            {id: 162, pattern: "Tree DFS - Paths", problem: "257. Binary Tree Paths", priority: "medium", difficulty: "Easy", companies: ["All"], category: "trees", reason: "All root-to-leaf", number: 257},
+            {id: 163, pattern: "Tree - Serialize", problem: "297. Serialize and Deserialize Binary Tree", priority: "medium", difficulty: "Hard", companies: ["Paytm", "Cred"], category: "trees", reason: "Tree encoding", number: 297},
+            {id: 164, pattern: "Tree DFS - Sum", problem: "404. Sum of Left Leaves", priority: "medium", difficulty: "Easy", companies: ["All"], category: "trees", reason: "Selective sum", number: 404},
+            {id: 165, pattern: "Tree DFS - Path Sum", problem: "437. Path Sum III", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "trees", reason: "Path with sum", number: 437},
+            {id: 166, pattern: "Tree DFS - Inorder", problem: "501. Find Mode in Binary Search Tree", priority: "medium", difficulty: "Easy", companies: ["All"], category: "trees", reason: "BST mode", number: 501},
+            {id: 167, pattern: "Tree BFS - Level Order", problem: "513. Find Bottom Left Tree Value", priority: "medium", difficulty: "Medium", companies: ["All"], category: "trees", reason: "Leftmost in last", number: 513},
+            {id: 168, pattern: "Tree BFS - Level Order", problem: "515. Find Largest Value in Each Tree Row", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "trees", reason: "Row maximum", number: 515},
+            {id: 169, pattern: "Tree - Serialize", problem: "652. Find Duplicate Subtrees", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "trees", reason: "Subtree serialization", number: 652},
+            {id: 170, pattern: "Tree DFS - Path", problem: "1448. Count Good Nodes in Binary Tree", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "trees", reason: "Path maximum", number: 1448},
+
+            // GRAPHS
+            {id: 171, pattern: "Graph - Clone", problem: "133. Clone Graph", priority: "high", difficulty: "Medium", companies: ["Cred"], category: "graphs", reason: "Graph copying", number: 133},
+            {id: 172, pattern: "Graph DFS - Islands", problem: "200. Number of Islands", priority: "high", difficulty: "Medium", companies: ["All"], category: "graphs", reason: "Graph DFS intro", number: 200},
+            {id: 173, pattern: "Graph - Cycle Detection", problem: "207. Course Schedule", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred"], category: "graphs", reason: "Topological intro", number: 207},
+            {id: 174, pattern: "Graph - Cycle Detection", problem: "210. Course Schedule II", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred"], category: "graphs", reason: "Ordering with topo", number: 210},
+            {id: 175, pattern: "Graph - Connected Components", problem: "323. Number of Connected Components", priority: "high", difficulty: "Medium", companies: ["All"], category: "graphs", reason: "Union-Find or DFS", number: 323},
+            {id: 176, pattern: "Graph DFS - Islands", problem: "417. Pacific Atlantic Water Flow", priority: "high", difficulty: "Medium", companies: ["Samsung"], category: "graphs", reason: "Multi-source DFS", number: 417},
+            {id: 177, pattern: "Graph - Connected Components", problem: "547. Number of Provinces", priority: "high", difficulty: "Medium", companies: ["Paytm"], category: "graphs", reason: "Connected components", number: 547},
+            {id: 178, pattern: "Graph - Union Find", problem: "684. Redundant Connection", priority: "high", difficulty: "Medium", companies: ["Samsung"], category: "graphs", reason: "Union-Find basics", number: 684},
+            {id: 179, pattern: "Graph DFS - Islands", problem: "695. Max Area of Island", priority: "high", difficulty: "Medium", companies: ["Samsung", "Jio"], category: "graphs", reason: "Islands with calc", number: 695},
+            {id: 180, pattern: "Graph DFS - Islands", problem: "733. Flood Fill", priority: "high", difficulty: "Easy", companies: ["All"], category: "graphs", reason: "DFS application", number: 733},
+            {id: 181, pattern: "Graph BFS - Islands", problem: "994. Rotting Oranges", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred", "Samsung"], category: "graphs", reason: "Multi-source BFS", number: 994},
+            {id: 182, pattern: "Graph BFS - Shortest Path", problem: "1091. Shortest Path in Binary Matrix", priority: "high", difficulty: "Medium", companies: ["Samsung"], category: "graphs", reason: "BFS shortest path", number: 1091},
+            {id: 183, pattern: "Graph BFS - Islands", problem: "1162. As Far from Land as Possible", priority: "high", difficulty: "Medium", companies: ["Jio"], category: "graphs", reason: "Multi-source BFS", number: 1162},
+            {id: 184, pattern: "Graph - Basic Traversal", problem: "1971. Find if Path Exists in Graph", priority: "high", difficulty: "Easy", companies: ["All"], category: "graphs", reason: "Basic graph", number: 1971},
+            {id: 185, pattern: "Graph BFS - Word Ladder", problem: "127. Word Ladder", priority: "medium", difficulty: "Hard", companies: ["Paytm"], category: "graphs", reason: "BFS transformation", number: 127},
+            {id: 186, pattern: "Graph DFS - Islands", problem: "130. Surrounded Regions", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "graphs", reason: "Boundary DFS", number: 130},
+            {id: 187, pattern: "Graph - Valid Tree", problem: "261. Graph Valid Tree", priority: "medium", difficulty: "Medium", companies: ["All"], category: "graphs", reason: "Tree validation", number: 261},
+            {id: 188, pattern: "Graph - Topological", problem: "310. Minimum Height Trees", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "graphs", reason: "Finding centers", number: 310},
+            {id: 189, pattern: "Graph - Weighted", problem: "399. Evaluate Division", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "graphs", reason: "Weighted graph", number: 399},
+            {id: 190, pattern: "Graph BFS - Distance", problem: "542. 01 Matrix", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "graphs", reason: "Distance calculation", number: 542},
+            {id: 191, pattern: "Graph - Union Find", problem: "721. Accounts Merge", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "graphs", reason: "Union-Find", number: 721},
+            {id: 192, pattern: "Graph - Bipartite", problem: "785. Is Graph Bipartite?", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "graphs", reason: "Graph coloring", number: 785},
+            {id: 193, pattern: "Graph DFS - Reachability", problem: "841. Keys and Rooms", priority: "medium", difficulty: "Medium", companies: ["All"], category: "graphs", reason: "DFS reachability", number: 841},
+            {id: 194, pattern: "Graph DFS - Islands", problem: "1020. Number of Enclaves", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "graphs", reason: "Boundary elimination", number: 1020},
+            {id: 195, pattern: "Graph DFS - Islands", problem: "1254. Number of Closed Islands", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "graphs", reason: "Islands variant", number: 1254},
+
+            // DYNAMIC PROGRAMMING
+            {id: 196, pattern: "DP - Kadane", problem: "53. Maximum Subarray", priority: "high", difficulty: "Medium", companies: ["All"], category: "dp", reason: "Most important DP", number: 53},
+            {id: 197, pattern: "DP - Grid", problem: "62. Unique Paths", priority: "high", difficulty: "Medium", companies: ["All"], category: "dp", reason: "Grid DP intro", number: 62},
+            {id: 198, pattern: "DP - Grid", problem: "63. Unique Paths II", priority: "high", difficulty: "Medium", companies: ["Airtel"], category: "dp", reason: "Obstacles handling", number: 63},
+            {id: 199, pattern: "DP - Grid", problem: "64. Minimum Path Sum", priority: "high", difficulty: "Medium", companies: ["Samsung", "Jio"], category: "dp", reason: "Path with cost", number: 64},
+            {id: 200, pattern: "DP - Fibonacci", problem: "70. Climbing Stairs", priority: "high", difficulty: "Easy", companies: ["All"], category: "dp", reason: "DP intro", number: 70},
+            {id: 201, pattern: "DP - Fibonacci", problem: "91. Decode Ways", priority: "high", difficulty: "Medium", companies: ["Cred"], category: "dp", reason: "Decision making", number: 91},
+            {id: 202, pattern: "Greedy - Stock", problem: "121. Best Time to Buy and Sell Stock", priority: "high", difficulty: "Easy", companies: ["All"], category: "dp", reason: "Single transaction", number: 121},
+            {id: 203, pattern: "Greedy - Stock", problem: "122. Best Time to Buy and Sell Stock II", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred"], category: "dp", reason: "Multiple transactions", number: 122},
+            {id: 204, pattern: "DP - Word Break", problem: "139. Word Break", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred"], category: "dp", reason: "String DP", number: 139},
+            {id: 205, pattern: "DP - Fibonacci", problem: "198. House Robber", priority: "high", difficulty: "Medium", companies: ["Paytm", "Samsung"], category: "dp", reason: "State machine DP", number: 198},
+            {id: 206, pattern: "DP - Fibonacci", problem: "213. House Robber II", priority: "high", difficulty: "Medium", companies: ["Paytm"], category: "dp", reason: "Circular constraint", number: 213},
+            {id: 207, pattern: "DP - LIS", problem: "300. Longest Increasing Subsequence", priority: "high", difficulty: "Medium", companies: ["Paytm", "Samsung"], category: "dp", reason: "Classic DP", number: 300},
+            {id: 208, pattern: "DP - Coin Change", problem: "322. Coin Change", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred"], category: "dp", reason: "Unbounded knapsack", number: 322},
+            {id: 209, pattern: "DP - 0/1 Knapsack", problem: "416. Partition Equal Subset Sum", priority: "high", difficulty: "Medium", companies: ["Samsung", "Paytm"], category: "dp", reason: "Subset sum problem", number: 416},
+            {id: 210, pattern: "DP - LCS", problem: "1143. Longest Common Subsequence", priority: "high", difficulty: "Medium", companies: ["Samsung", "Paytm"], category: "dp", reason: "2D DP template", number: 1143},
+            {id: 211, pattern: "DP - Fibonacci", problem: "1137. N-th Tribonacci Number", priority: "high", difficulty: "Easy", companies: ["All"], category: "dp", reason: "Fibonacci variant", number: 1137},
+            {id: 212, pattern: "DP - Edit Distance", problem: "72. Edit Distance", priority: "medium", difficulty: "Hard", companies: ["Paytm", "Cred"], category: "dp", reason: "Classic 2D DP", number: 72},
+            {id: 213, pattern: "DP - Catalan", problem: "96. Unique Binary Search Trees", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "dp", reason: "Catalan numbers", number: 96},
+            {id: 214, pattern: "DP - Grid", problem: "120. Triangle", priority: "medium", difficulty: "Medium", companies: ["Jio"], category: "dp", reason: "Grid DP variant", number: 120},
+            {id: 215, pattern: "DP - Kadane", problem: "152. Maximum Product Subarray", priority: "medium", difficulty: "Medium", companies: ["Samsung", "Paytm"], category: "dp", reason: "Product variant", number: 152},
+            {id: 216, pattern: "DP - Grid", problem: "221. Maximal Square", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "dp", reason: "2D DP", number: 221},
+            {id: 217, pattern: "DP - Perfect Squares", problem: "279. Perfect Squares", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "dp", reason: "BFS or DP", number: 279},
+            {id: 218, pattern: "DP - Stock", problem: "309. Best Time to Buy and Sell Stock with Cooldown", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "dp", reason: "State machine", number: 309},
+            {id: 219, pattern: "DP - Integer Break", problem: "343. Integer Break", priority: "medium", difficulty: "Medium", companies: ["All"], category: "dp", reason: "DP optimization", number: 343},
+            {id: 220, pattern: "DP - Coin Change", problem: "377. Combination Sum IV", priority: "medium", difficulty: "Medium", companies: ["Cred"], category: "dp", reason: "Counting combinations", number: 377},
+            {id: 221, pattern: "DP - Coin Change", problem: "518. Coin Change II", priority: "medium", difficulty: "Medium", companies: ["Cred"], category: "dp", reason: "Counting ways", number: 518},
+            {id: 222, pattern: "DP - Fibonacci", problem: "746. Min Cost Climbing Stairs", priority: "medium", difficulty: "Easy", companies: ["All"], category: "dp", reason: "Similar to climbing", number: 746},
+            {id: 223, pattern: "DP - Grid", problem: "931. Minimum Falling Path Sum", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "dp", reason: "Grid DP", number: 931},
+            {id: 224, pattern: "DP - Planning", problem: "983. Minimum Cost For Tickets", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "dp", reason: "DP planning", number: 983},
+            {id: 225, pattern: "DP - LIS", problem: "1048. Longest String Chain", priority: "medium", difficulty: "Medium", companies: ["Cred"], category: "dp", reason: "DP + sorting", number: 1048},
+
+            // HEAPS
+            {id: 226, pattern: "Heap - Top K", problem: "215. Kth Largest Element in an Array", priority: "high", difficulty: "Medium", companies: ["All"], category: "heaps", reason: "QuickSelect or heap", number: 215},
+            {id: 227, pattern: "Heap - Top K", problem: "347. Top K Frequent Elements", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred"], category: "heaps", reason: "Frequency + heap", number: 347},
+            {id: 228, pattern: "Heap - K-way Merge", problem: "373. Find K Pairs with Smallest Sums", priority: "high", difficulty: "Medium", companies: ["Samsung"], category: "heaps", reason: "K-way merge", number: 373},
+            {id: 229, pattern: "Heap - K-way Merge", problem: "378. Kth Smallest Element in a Sorted Matrix", priority: "high", difficulty: "Medium", companies: ["Samsung"], category: "heaps", reason: "Matrix + heap", number: 378},
+            {id: 230, pattern: "Heap - Design", problem: "703. Kth Largest Element in a Stream", priority: "high", difficulty: "Easy", companies: ["All"], category: "heaps", reason: "Min heap design", number: 703},
+            {id: 231, pattern: "Heap - Top K", problem: "973. K Closest Points to Origin", priority: "high", difficulty: "Medium", companies: ["Samsung", "Jio"], category: "heaps", reason: "Distance calculation", number: 973},
+            {id: 232, pattern: "Heap - Simulation", problem: "1046. Last Stone Weight", priority: "high", difficulty: "Easy", companies: ["All"], category: "heaps", reason: "Max heap simulation", number: 1046},
+            {id: 233, pattern: "Heap - Scheduling", problem: "253. Meeting Rooms II", priority: "medium", difficulty: "Medium", companies: ["Paytm", "Cred"], category: "heaps", reason: "Interval scheduling", number: 253},
+            {id: 234, pattern: "Heap - Two Heaps", problem: "295. Find Median from Data Stream", priority: "medium", difficulty: "Hard", companies: ["Paytm", "Cred"], category: "heaps", reason: "Two heaps design", number: 295},
+            {id: 235, pattern: "Heap - Top K", problem: "451. Sort Characters By Frequency", priority: "medium", difficulty: "Medium", companies: ["All"], category: "heaps", reason: "Frequency sorting", number: 451},
+            {id: 236, pattern: "Heap - Top K", problem: "1337. The K Weakest Rows in a Matrix", priority: "medium", difficulty: "Easy", companies: ["All"], category: "heaps", reason: "Heap with custom", number: 1337},
+
+            // BACKTRACKING
+            {id: 237, pattern: "Backtracking - Combinations", problem: "17. Letter Combinations of a Phone Number", priority: "high", difficulty: "Medium", companies: ["All"], category: "backtracking", reason: "Classic backtracking", number: 17},
+            {id: 238, pattern: "Backtracking - Parentheses", problem: "22. Generate Parentheses", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred", "Samsung"], category: "backtracking", reason: "Constraint-based", number: 22},
+            {id: 239, pattern: "Backtracking - Combination Sum", problem: "39. Combination Sum", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred"], category: "backtracking", reason: "Unlimited use", number: 39},
+            {id: 240, pattern: "Backtracking - Combination Sum", problem: "40. Combination Sum II", priority: "high", difficulty: "Medium", companies: ["Samsung"], category: "backtracking", reason: "Limited use variant", number: 40},
+            {id: 241, pattern: "Backtracking - Permutations", problem: "46. Permutations", priority: "high", difficulty: "Medium", companies: ["Paytm", "Samsung"], category: "backtracking", reason: "Permutation template", number: 46},
+            {id: 242, pattern: "Backtracking - Permutations", problem: "47. Permutations II", priority: "high", difficulty: "Medium", companies: ["Samsung"], category: "backtracking", reason: "With duplicates", number: 47},
+            {id: 243, pattern: "Backtracking - Subsets", problem: "78. Subsets", priority: "high", difficulty: "Medium", companies: ["All"], category: "backtracking", reason: "Backtracking template", number: 78},
+            {id: 244, pattern: "Backtracking - Subsets", problem: "90. Subsets II", priority: "high", difficulty: "Medium", companies: ["Samsung"], category: "backtracking", reason: "Duplicates handling", number: 90},
+            {id: 245, pattern: "Backtracking - Palindrome", problem: "131. Palindrome Partitioning", priority: "high", difficulty: "Medium", companies: ["Paytm"], category: "backtracking", reason: "String partitioning", number: 131},
+            {id: 246, pattern: "Backtracking - Combination Sum", problem: "216. Combination Sum III", priority: "high", difficulty: "Medium", companies: ["All"], category: "backtracking", reason: "Fixed length", number: 216},
+            {id: 247, pattern: "Backtracking - N-Queens", problem: "37. Sudoku Solver", priority: "medium", difficulty: "Hard", companies: ["Samsung"], category: "backtracking", reason: "Constraint satisfaction", number: 37},
+            {id: 248, pattern: "Backtracking - N-Queens", problem: "51. N-Queens", priority: "medium", difficulty: "Hard", companies: ["Paytm"], category: "backtracking", reason: "Classic backtracking", number: 51},
+            {id: 249, pattern: "Backtracking - Combinations", problem: "77. Combinations", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "backtracking", reason: "Combination generation", number: 77},
+            {id: 250, pattern: "Backtracking - Word Search", problem: "79. Word Search", priority: "medium", difficulty: "Medium", companies: ["Samsung", "Jio"], category: "backtracking", reason: "Grid backtracking", number: 79},
+            {id: 251, pattern: "Backtracking - String", problem: "93. Restore IP Addresses", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "backtracking", reason: "String partitioning", number: 93},
+            {id: 252, pattern: "Backtracking - Permutations", problem: "784. Letter Case Permutation", priority: "medium", difficulty: "Medium", companies: ["All"], category: "backtracking", reason: "Toggle case", number: 784},
+            {id: 253, pattern: "Backtracking - String", problem: "1087. Brace Expansion", priority: "medium", difficulty: "Medium", companies: ["Cred"], category: "backtracking", reason: "String expansion", number: 1087},
+            {id: 254, pattern: "Backtracking - Optimization", problem: "1593. Split a String Into Max Unique Substrings", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "backtracking", reason: "Backtracking opt", number: 1593},
+
+            // GREEDY
+            {id: 255, pattern: "Greedy - Jump Game", problem: "45. Jump Game II", priority: "high", difficulty: "Medium", companies: ["Samsung"], category: "greedy", reason: "Min jumps", number: 45},
+            {id: 256, pattern: "Greedy - Jump Game", problem: "55. Jump Game", priority: "high", difficulty: "Medium", companies: ["Samsung", "Jio"], category: "greedy", reason: "Reachability check", number: 55},
+            {id: 257, pattern: "Greedy - Intervals", problem: "56. Merge Intervals", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred", "Samsung"], category: "greedy", reason: "Top interval problem", number: 56},
+            {id: 258, pattern: "Greedy - Intervals", problem: "57. Insert Interval", priority: "high", difficulty: "Medium", companies: ["Paytm", "Samsung"], category: "greedy", reason: "Insertion logic", number: 57},
+            {id: 259, pattern: "Greedy - Gas Station", problem: "134. Gas Station", priority: "high", difficulty: "Medium", companies: ["Paytm"], category: "greedy", reason: "Circuit completion", number: 134},
+            {id: 260, pattern: "Greedy - Intervals", problem: "435. Non-overlapping Intervals", priority: "high", difficulty: "Medium", companies: ["Samsung"], category: "greedy", reason: "Interval scheduling", number: 435},
+            {id: 261, pattern: "Greedy - Intervals", problem: "452. Minimum Number of Arrows to Burst Balloons", priority: "high", difficulty: "Medium", companies: ["Samsung"], category: "greedy", reason: "Greedy intervals", number: 452},
+            {id: 262, pattern: "Greedy - Sorting", problem: "406. Queue Reconstruction by Height", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "greedy", reason: "Greedy sorting", number: 406},
+            {id: 263, pattern: "Greedy - Task Scheduler", problem: "621. Task Scheduler", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "greedy", reason: "Frequency-based", number: 621},
+            {id: 264, pattern: "Greedy - String", problem: "763. Partition Labels", priority: "medium", difficulty: "Medium", companies: ["Samsung"], category: "greedy", reason: "String partitioning", number: 763},
+            {id: 265, pattern: "Greedy - Range Cover", problem: "1326. Minimum Number of Taps to Open", priority: "medium", difficulty: "Hard", companies: ["Paytm"], category: "greedy", reason: "Greedy range cover", number: 1326},
+            {id: 266, pattern: "Greedy - Heap", problem: "1383. Maximum Performance of a Team", priority: "medium", difficulty: "Hard", companies: ["Cred"], category: "greedy", reason: "Greedy + heap", number: 1383},
+
+            // DESIGN
+            {id: 267, pattern: "Design - LRU Cache", problem: "146. LRU Cache", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred", "Samsung"], category: "design", reason: "Most asked design", number: 146},
+            {id: 268, pattern: "Design - Trie", problem: "208. Implement Trie (Prefix Tree)", priority: "high", difficulty: "Medium", companies: ["Paytm", "Cred"], category: "design", reason: "Prefix tree basics", number: 208},
+            {id: 269, pattern: "Design - Trie", problem: "211. Design Add and Search Words", priority: "high", difficulty: "Medium", companies: ["Cred"], category: "design", reason: "Trie with wildcards", number: 211},
+            {id: 270, pattern: "Design - Stack/Queue", problem: "225. Implement Stack using Queues", priority: "high", difficulty: "Easy", companies: ["All"], category: "design", reason: "Data structure conversion", number: 225},
+            {id: 271, pattern: "Design - Stack/Queue", problem: "232. Implement Queue using Stacks", priority: "high", difficulty: "Easy", companies: ["All"], category: "design", reason: "Data structure conversion", number: 232},
+            {id: 272, pattern: "Design - HashMap", problem: "380. Insert Delete GetRandom O(1)", priority: "medium", difficulty: "Medium", companies: ["Paytm", "Cred"], category: "design", reason: "HashMap + array", number: 380},
+            {id: 273, pattern: "Design - HashMap", problem: "706. Design HashMap", priority: "medium", difficulty: "Easy", companies: ["Paytm", "Cred"], category: "design", reason: "Understanding hashing", number: 706},
+            {id: 274, pattern: "Design - Time Based", problem: "981. Time Based Key-Value Store", priority: "medium", difficulty: "Medium", companies: ["Cred"], category: "design", reason: "HashMap + BS", number: 981},
+            {id: 275, pattern: "Design - Snapshot", problem: "1146. Snapshot Array", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "design", reason: "Array versioning", number: 1146},
+
+            // ADDITIONAL
+            {id: 276, pattern: "Matrix - Spiral", problem: "54. Spiral Matrix", priority: "high", difficulty: "Medium", companies: ["Samsung", "Jio"], category: "arrays", reason: "Boundary traversal", number: 54},
+            {id: 277, pattern: "Array - Shuffle", problem: "384. Shuffle an Array", priority: "high", difficulty: "Medium", companies: ["All"], category: "arrays", reason: "Array shuffling", number: 384},
+            {id: 278, pattern: "Stack - Calculator", problem: "227. Basic Calculator II", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "stacks", reason: "Expression evaluation", number: 227},
+            {id: 279, pattern: "String - Add Binary", problem: "67. Add Binary", priority: "medium", difficulty: "Easy", companies: ["All"], category: "strings", reason: "Binary addition", number: 67},
+            {id: 280, pattern: "Array - Find Median", problem: "295. Find Median from Data Stream", priority: "medium", difficulty: "Hard", companies: ["Paytm", "Cred"], category: "heaps", reason: "Already listed", number: 295},
+            {id: 281, pattern: "String - Longest Palindrome", problem: "409. Longest Palindrome", priority: "medium", difficulty: "Easy", companies: ["All"], category: "strings", reason: "Already listed", number: 409},
+            {id: 282, pattern: "DP - House Robber III", problem: "337. House Robber III", priority: "medium", difficulty: "Medium", companies: ["Paytm"], category: "dp", reason: "Tree DP", number: 337},
+            {id: 283, pattern: "Array - Intersection", problem: "350. Intersection of Two Arrays II", priority: "medium", difficulty: "Easy", companies: ["All"], category: "arrays", reason: "Follow-up to 349", number: 350},
+            {id: 284, pattern: "String - Is Isomorphic", problem: "205. Isomorphic Strings", priority: "medium", difficulty: "Easy", companies: ["All"], category: "strings", reason: "HashMap mapping", number: 205},
+            {id: 285, pattern: "Array - Best Meeting Point", problem: "296. Best Meeting Point", priority: "medium", difficulty: "Hard", companies: ["Cred"], category: "arrays", reason: "Median calculation", number: 296}
+        ];
+
+        let completedProblems = new Set();
+        let filteredProblems = [...allProblems];
+        let currentSort = { column: 'number', ascending: true };
+
+        // Load completed problems from localStorage on page load
+        function loadProgress() {
+            const saved = localStorage.getItem('leetcodeProgress');
+            if (saved) {
+                completedProblems = new Set(JSON.parse(saved));
+            }
+        }
+
+        // Save completed problems to localStorage
+        function saveProgress() {
+            localStorage.setItem('leetcodeProgress', JSON.stringify([...completedProblems]));
+        }
+
+        // Update statistics
+        function updateStats() {
+            const total = allProblems.length;
+            const completed = completedProblems.size;
+            const remaining = total - completed;
+            const percent = Math.round((completed / total) * 100);
+
+            document.getElementById('totalProblems').textContent = total;
+            document.getElementById('completedProblems').textContent = completed;
+            document.getElementById('remainingProblems').textContent = remaining;
+            document.getElementById('progressPercent').textContent = percent + '%';
+            document.getElementById('progressText').textContent = `${completed} / ${total}`;
+            
+            const progressBar = document.getElementById('progressBarFill');
+            progressBar.style.width = percent + '%';
+            progressBar.textContent = percent + '%';
+        }
+
+        // Toggle problem completion
+        function toggleComplete(id) {
+            if (completedProblems.has(id)) {
+                completedProblems.delete(id);
+            } else {
+                completedProblems.add(id);
+            }
+            saveProgress();
+            updateStats();
+            renderTable();
+        }
+
+        // Apply all filters
+        function applyFilters() {
+            const priority = document.getElementById('priorityFilter').value;
+            const category = document.getElementById('categoryFilter').value;
+            const difficulty = document.getElementById('difficultyFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const search = document.getElementById('searchBox').value.toLowerCase();
+
+            filteredProblems = allProblems.filter(prob => {
+                if (priority !== 'all' && prob.priority !== priority) return false;
+                if (category !== 'all' && prob.category !== category) return false;
+                if (difficulty !== 'all' && prob.difficulty !== difficulty) return false;
+                if (status === 'completed' && !completedProblems.has(prob.id)) return false;
+                if (status === 'pending' && completedProblems.has(prob.id)) return false;
+                if (search && !prob.problem.toLowerCase().includes(search) && 
+                    !prob.pattern.toLowerCase().includes(search) &&
+                    !prob.reason.toLowerCase().includes(search)) return false;
+                
+                return true;
+            });
+
+            renderTable();
+        }
+
+        // Sort table by column
+        function sortTable(column) {
+            if (currentSort.column === column) {
+                currentSort.ascending = !currentSort.ascending;
+            } else {
+                currentSort.column = column;
+                currentSort.ascending = true;
+            }
+
+            filteredProblems.sort((a, b) => {
+                let aVal, bVal;
+                
+                if (column === 'done') {
+                    aVal = completedProblems.has(a.id) ? 1 : 0;
+                    bVal = completedProblems.has(b.id) ? 1 : 0;
+                } else if (column === 'number') {
+                    aVal = a.number;
+                    bVal = b.number;
+                } else {
+                    aVal = a[column];
+                    bVal = b[column];
+                }
+
+                if (aVal < bVal) return currentSort.ascending ? -1 : 1;
+                if (aVal > bVal) return currentSort.ascending ? 1 : -1;
+                return 0;
+            });
+
+            renderTable();
+        }
+
+        // Render the table
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const noResults = document.getElementById('noResults');
+            
+            tbody.innerHTML = '';
+            
+            if (filteredProblems.length === 0) {
+                noResults.style.display = 'block';
+                return;
+            }
+            
+            noResults.style.display = 'none';
+
+            filteredProblems.forEach((prob, index) => {
+                const row = document.createElement('tr');
+                const isCompleted = completedProblems.has(prob.id);
+                
+                if (isCompleted) {
+                    row.classList.add('completed');
+                }
+
+                const problemNumber = prob.problem.split('.')[0];
+                const problemName = prob.problem.substring(prob.problem.indexOf('.') + 1).trim();
+                const leetcodeUrl = `https://leetcode.com/problems/${problemName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
+
+                row.innerHTML = `
+                    <td class="checkbox-cell">
+                        <input type="checkbox" ${isCompleted ? 'checked' : ''} 
+                               onchange="toggleComplete(${prob.id})">
+                    </td>
+                    <td>${index + 1}</td>
+                    <td style="font-size: 12px; color: #666;">${prob.pattern}</td>
+                    <td>
+                        <a href="${leetcodeUrl}" target="_blank" class="problem-link">${prob.problem}</a>
+                    </td>
+                    <td><span class="priority-${prob.priority}">${prob.priority}</span></td>
+                    <td class="difficulty-${prob.difficulty.toLowerCase()}">${prob.difficulty}</td>
+                    <td>
+                        <div class="company-tags">
+                            ${prob.companies.map(c => `<span class="company-tag">${c}</span>`).join('')}
+                        </div>
+                    </td>
+                    <td style="font-size: 12px; color: #555;">${prob.reason}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Export progress to CSV
+        function exportProgress() {
+            const completed = allProblems.filter(p => completedProblems.has(p.id));
+            const pending = allProblems.filter(p => !completedProblems.has(p.id));
+            
+            let csv = 'Status,Pattern,Problem,Priority,Difficulty,Companies,Why Important\n';
+            
+            csv += '=== COMPLETED PROBLEMS ===\n';
+            completed.forEach(prob => {
+                csv += `"✓","${prob.pattern}","${prob.problem}","${prob.priority}","${prob.difficulty}","${prob.companies.join('; ')}","${prob.reason}"\n`;
+            });
+            
+            csv += '\n=== PENDING PROBLEMS ===\n';
+            pending.forEach(prob => {
+                csv += `"✗","${prob.pattern}","${prob.problem}","${prob.priority}","${prob.difficulty}","${prob.companies.join('; ')}","${prob.reason}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `leetcode_progress_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Mark all visible problems as completed
+        function markAllVisible() {
+            if (confirm(`Mark all ${filteredProblems.length} visible problems as completed?`)) {
+                filteredProblems.forEach(prob => {
+                    completedProblems.add(prob.id);
+                });
+                saveProgress();
+                updateStats();
+                renderTable();
+            }
+        }
+
+        // Reset all progress
+        function resetProgress() {
+            if (confirm('Are you sure you want to reset ALL progress? This cannot be undone!')) {
+                completedProblems.clear();
+                localStorage.removeItem('leetcodeProgress');
+                updateStats();
+                renderTable();
+            }
+        }
+
+        // Event listeners
+        document.getElementById('priorityFilter').addEventListener('change', applyFilters);
+        document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+        document.getElementById('difficultyFilter').addEventListener('change', applyFilters);
+        document.getElementById('statusFilter').addEventListener('change', applyFilters);
+        document.getElementById('searchBox').addEventListener('input', applyFilters);
+
+        // Initialize on page load
+        loadProgress();
+        updateStats();
+        renderTable();
+    </script>
+</body>
+</html>
